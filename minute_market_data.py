@@ -8,6 +8,8 @@ import pandas as pd
 # You need to install the catalyst library and its dependencies for this
 from catalyst.api import record, symbol, symbols
 from catalyst.utils.run_algo import run_algorithm
+
+
 # Most this code is from the Catalyst tutorial example
 def initialize(context):
     # Portfolio assets list
@@ -40,8 +42,8 @@ def analyze(context=None, results=None):
      Note: Besides for running the script with run_algorithm, you can also run the script in a command-line interface like this:
      catalyst run -f read_minute_data.py --start 2018-3-3 --end 2018-4-3 --capital-base 100000 -x binance -c usdt -o minute.csv --data-frequency minute
 '''
-start = datetime(2018, 3, 3, 0, 0, 0, 0, pytz.utc)
-end = datetime(2018, 4, 3, 0, 0, 0, 0, pytz.utc)
+start = datetime(2018, 1, 3, 0, 0, 0, 0, pytz.utc)
+end = datetime(2018, 6, 3, 0, 0, 0, 0, pytz.utc)
 results = run_algorithm(
     initialize=initialize,
     handle_data=handle_data,
