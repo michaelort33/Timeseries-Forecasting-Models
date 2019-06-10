@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1d6f4aaa-7a79-4adb-b8d0-6e14f453c9a7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lstm_backtest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor_lstm.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/btc_trader.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/btc_trader.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/minute_market_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/minute_market_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lstm_backtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/lstm_backtest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor_lstm.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor_lstm.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,11 +71,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lstm_backtest.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="16" selection-start-line="16" selection-end-line="16" />
+            <state relative-caret-position="218">
+              <caret line="82" column="9" selection-start-line="82" selection-start-column="4" selection-end-line="82" selection-end-column="9" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -87,9 +83,16 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/predictor_lstm.py">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="252">
+              <caret line="47" column="28" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -114,7 +117,6 @@
     <findStrings>
       <find>ltc_</find>
       <find>order</find>
-      <find>pd.</find>
       <find>time</find>
       <find>US</find>
       <find>start_time</find>
@@ -122,14 +124,21 @@
       <find>btc</find>
       <find>long_ma</find>
       <find>initi</find>
-      <find>print</find>
       <find>my_long_data</find>
-      <find>model</find>
-      <find>train</find>
       <find>data</find>
       <find>record</find>
       <find>price_change</find>
       <find>context.bas</find>
+      <find>test_x</find>
+      <find>model</find>
+      <find>train_y</find>
+      <find>pd.</find>
+      <find>read_tr</find>
+      <find>predictor_lstm.</find>
+      <find>trai</find>
+      <find>train</find>
+      <find>price1</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -148,8 +157,8 @@
         <option value="$PROJECT_DIR$/minute_market_data.py" />
         <option value="$PROJECT_DIR$/dual_moving_average.py" />
         <option value="$PROJECT_DIR$/first_test_algo.py" />
-        <option value="$PROJECT_DIR$/lstm_backtest.py" />
         <option value="$PROJECT_DIR$/predictor_lstm.py" />
+        <option value="$PROJECT_DIR$/lstm_backtest.py" />
       </list>
     </option>
   </component>
@@ -279,7 +288,14 @@
       <option name="project" value="LOCAL" />
       <updated>1555419170235</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Updated comments">
+      <created>1559953274955</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1559953274955</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -299,7 +315,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4997233" weight="0.3922414" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5002767" side_tool="true" weight="0.44181034" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.34351146" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.29334787" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -402,18 +418,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/predictor_lstm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="47" column="28" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lstm_backtest.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="218">
+          <caret line="82" column="9" selection-start-line="82" selection-start-column="4" selection-end-line="82" selection-end-column="9" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/predictor_lstm.py">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

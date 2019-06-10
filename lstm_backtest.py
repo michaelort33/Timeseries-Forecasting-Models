@@ -9,11 +9,7 @@ from catalyst import run_algorithm
 from catalyst.api import (record, symbol, order_target_percent, )
 from catalyst.exchange.utils.stats_utils import extract_transactions
 
-from keras.models import load_model
-
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
-import math
+import predictor_lstm
 
 
 NAMESPACE = 'first_test'
@@ -29,13 +25,12 @@ def initialize(context):
     context.last_prediction = 1000000
     context.prediction = 0
     context.num_hours = 0
-    context.model = load_model('../trainer/btc_predictor_5.h5')
     context.train = pd.read_csv('../input/jan_june_btc_minute.csv')
 
 
 def handle_data(context, data):
     # define the windows for the moving averages
-    long_window = 180
+    long_window = 240
 
     # Skip as many bars as long_window to properly compute the average
     context.i += 1
@@ -53,7 +48,7 @@ def handle_data(context, data):
                              frequency="1T",
                              )
 
-    def read(df):
+    def read_catalyst_history(df):
 
         df = pd.DataFrame(df)
         df.columns = ['price']
@@ -63,101 +58,24 @@ def handle_data(context, data):
 
         return df
 
-    my_price_data = read(long_data)
+    my_price_data = read_catalyst_history(long_data)
 
-    def create_features(df):
-        chunk_size = 60
-        num_chunks = math.floor(len(df) / chunk_size)
-
-        df_features = pd.DataFrame(columns=['mean', 'std', 'slope', 'max_change', 'price1'])
-
-        for i in list(range(0, num_chunks)):
-            chunk_indices = list(range(i * chunk_size, (i * chunk_size) + chunk_size))
-            chunk = df.iloc[chunk_indices, :]
-
-            x = list(range(0, chunk_size))
-            lin_model = LinearRegression().fit(np.array(x).reshape(-1, 1), chunk.price.values)
-            df_features.loc[i, 'slope'] = lin_model.coef_[0]
-            df_features.loc[i, 'mean'] = chunk.price.mean()
-            df_features.loc[i, 'std'] = chunk.price.std()
-            df_features.loc[i, 'max_change'] = chunk.price.max() - chunk.price.min()
-
-        df_features.loc[:, 'price1'] = df.price[::60].values
-
-        for i in list(range(1, 3)):
-            df_shifted = df_features.loc[:, ['price1']].shift(i)
-            df_shifted.columns = df_shifted.columns.values + str(i)
-            df_features = pd.concat([df_features, df_shifted], axis=1)
-
-        # remove NAs created by the shift
-        df = df_features.dropna()
-
-        return df
 
     # Create features
-    test_x = create_features(my_price_data)
-    test_x = test_x.iloc[-1:, ]
+    test_x = predictor_lstm.create_features(my_price_data)
 
-    def read_train(df):
-        # add Date name
-        df.columns = ['Date', 'price', 'volume']
+    # read training data for scaling inversion
+    train = predictor_lstm.read(context.train)
 
-        # convert to date type
-        df.loc[:, 'Date'] = df.loc[:, 'Date'].astype('datetime64[ns]')
+    # create features from training data for scaling inversion
+    train_x = predictor_lstm.create_features(train)
 
-        # Use Date column as index
-        df = df.set_index('Date', drop=True)
+    train_x = train_x.iloc[:-1, :]
 
-        # Use the price at the end of every hour
+    train_y = predictor_lstm.create_y(train.price)
 
-        return df
 
-    train = read_train(context.train)
-
-    train = create_features(train)
-
-    def prep_train(df):
-        df_x = df
-        df_y = df.price1
-        return df_x, df_y
-
-    train_x, train_y = prep_train(train)
-
-    def custom_scaler(df_fit, df_scale):
-        my_scaler = MinMaxScaler()
-
-        # fit to train
-        my_scaler.fit(df_fit)
-
-        # transform train or test
-        my_scaled = my_scaler.transform(df_scale)
-
-        return my_scaled
-
-    # scale test data
-    test_x_sc = custom_scaler(train_x, test_x)
-
-    # reshape test data to 3D for prediction
-    test_x_sc_neural = test_x_sc.reshape(test_x_sc.shape[0], test_x_sc.shape[1], 1)
-
-    # inverse scale
-    def inverse_scale(df1, df2):
-        my_scaler = MinMaxScaler()
-        my_scaler.fit(df1)
-        unscaled_predictions = my_scaler.inverse_transform(df2)
-
-        return unscaled_predictions
-
-    def get_predictions(my_test_x_sc, my_train_y, my_model):
-        # predictions
-        predictions_sc = my_model.predict(my_test_x_sc)
-
-        # invert scaled predictions
-        my_predictions = inverse_scale(my_train_y.values.reshape(-1, 1), predictions_sc)
-
-        return my_predictions
-
-    predictions_test = get_predictions(test_x_sc_neural, train_y, context.model)
+    predictions_test = predictor_lstm.get_predictions(train_x, test_x, train_y)
 
     context.last_prediction = context.prediction
     context.prediction = predictions_test
@@ -165,7 +83,7 @@ def handle_data(context, data):
     print(context.prediction)
     print(context.last_prediction)
 
-    # Let's keep the price of our asset in a more handy variable
+    # Save asset price
     price = data.current(context.asset, 'price')
 
     # If base_price is not set, we use the current value. This is the
@@ -195,16 +113,17 @@ def handle_data(context, data):
     def trade_decision(prediction, last_prediction, pos_amount):
 
         # Trading logic
-        if prediction > last_prediction and pos_amount == 0:
+        if (prediction/last_prediction) > 1.002 and pos_amount == 0:
             # we buy 100% of our portfolio for this asset
             order_target_percent(context.asset, 1)
-        elif prediction < last_prediction and pos_amount > 0:
+        elif (prediction/last_prediction) < 0.998 and pos_amount > 0:
             # we sell all our positions for this asset
             order_target_percent(context.asset, 0)
 
     trade_decision(context.prediction, context.last_prediction, pos_amount)
     context.num_hours += 1
     print(context.num_hours)
+    print(context.portfolio.cash)
 
 
 def analyze(context, perf):
@@ -271,8 +190,8 @@ def analyze(context, perf):
 
 
 if __name__ == '__main__':
-    start = datetime(2018, 12, 18, 0, 0, 0, 0, pytz.utc)
-    end = datetime(2018, 12, 18, 0, 0, 0, 0, pytz.utc)
+    start = datetime(2018, 7, 13, 0, 0, 0, 0, pytz.utc)
+    end = datetime(2018, 8, 15, 0, 0, 0, 0, pytz.utc)
 
     run_algorithm(
         capital_base=1000,
